@@ -1,0 +1,42 @@
+﻿@page "/"
+@using RichTextEditBug.Models
+
+<p>Switch between one and two with some speed, you should get an exception</p>
+
+@foreach (var textObject in textObjects)
+{
+    <Button @onclick="()=>PickNext(textObject)">@textObject.Text </Button>
+}
+
+@if (selectedObject?.ComponentType == "Component1")
+{
+    <Component1 InputText="selectedObject"></Component1>
+
+}
+else if (selectedObject?.ComponentType == "Component2")
+{
+    <Component2 InputText="selectedObject"></Component2>
+}
+
+
+
+@code {
+    private List<TextObject> textObjects = new List<TextObject>()
+    {
+        new TextObject("Component1", "Number 1"),
+        new TextObject("Component2", "Number 2", 6),
+    };
+    private TextObject? selectedObject = null;
+
+
+    private async Task PickNext(TextObject textObject)
+    {
+        selectedObject = textObject;
+        StateHasChanged();
+
+        await Task.Delay(20);
+        StateHasChanged();
+        await Task.Delay(20);
+        StateHasChanged();
+    }
+}

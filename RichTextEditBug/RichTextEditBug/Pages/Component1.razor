@@ -1,0 +1,25 @@
+﻿@using RichTextEditBug.Models
+
+<RichTextWrapper @ref="richTextReferences[0]" DisableEditing="enableEditing" DisabledEditActions="DisabledEditActions" OriginalText="text"></RichTextWrapper>
+
+
+@code {
+    [Parameter]
+    public TextObject InputText { get; set; } = new TextObject();
+    private string text = string.Empty;
+    private RichTextWrapper[] richTextReferences = new RichTextWrapper[1];
+
+    private bool enableEditing = false;
+    private List<RichTextEditAction> DisabledEditActions = new List<RichTextEditAction>()
+    {
+        RichTextEditAction.Link,
+        RichTextEditAction.Size
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        text = InputText.Text;
+    }
+
+
+}

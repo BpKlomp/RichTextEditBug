@@ -1,0 +1,76 @@
+﻿<RichTextEdit @ref="richTextEditRef"
+              Theme="RichTextEditTheme.Snow"
+              ContentChanged="@Changed"
+              PlaceHolder="Type content here"
+              ReadOnly="DisableEditing"
+              SubmitOnEnter="false">
+    <Editor>@convertedText</Editor>
+    <Toolbar>
+        <RichTextEditToolbarGroup>
+            @if (!DisabledEditActions.Contains(RichTextEditAction.Bold))
+            {
+                <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+            }
+            @if (!DisabledEditActions.Contains(RichTextEditAction.Italic))
+            {
+                <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+            }
+            @if (!DisabledEditActions.Contains(RichTextEditAction.Underline))
+            {
+                <RichTextEditToolbarButton Action="RichTextEditAction.Underline" />
+            }
+            @if (!DisabledEditActions.Contains(RichTextEditAction.Link))
+            {
+                <RichTextEditToolbarButton Action="RichTextEditAction.Link" />
+            }
+            @if (!DisabledEditActions.Contains(RichTextEditAction.List))
+            {
+                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+            }
+            @if (!DisabledEditActions.Contains(RichTextEditAction.Size))
+            {
+                <RichTextEditToolbarSelect Action="RichTextEditAction.Size">
+                    <RichTextEditToolbarSelectItem Value="small" />
+                    <RichTextEditToolbarSelectItem Selected />
+                     <RichTextEditToolbarSelectItem Value="large" />
+                     <RichTextEditToolbarSelectItem Value="huge">Very Big</RichTextEditToolbarSelectItem>
+                 </RichTextEditToolbarSelect>
+            }
+        </RichTextEditToolbarGroup>
+    </Toolbar>
+</RichTextEdit>
+@code {
+    protected RichTextEdit richTextEditRef = new RichTextEdit();
+    [Parameter]
+    public string OriginalText { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> OnContentChanged { get; set; }
+    [Parameter]
+    public List<RichTextEditAction> DisabledEditActions { get; set; } = new List<RichTextEditAction>();
+    [Parameter]
+    public bool DisableEditing { get; set; }
+
+    private MarkupString convertedText = new MarkupString(string.Empty);
+    private bool hasChanged = false;
+    private bool hasLoaded = false;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        convertedText = new MarkupString(OriginalText);
+        Thread.Sleep(2);
+    }
+
+    private async Task Changed()
+    {
+        var content = await richTextEditRef.GetHtmlAsync();
+        if (content != null && !hasChanged && hasLoaded)
+        {
+            await OnContentChanged.InvokeAsync(content);
+            hasChanged = true;
+        }
+        hasLoaded = true;
+    }
+
+}

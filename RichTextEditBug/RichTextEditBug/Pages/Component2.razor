@@ -1,0 +1,27 @@
+﻿@using RichTextEditBug.Models
+@for (var i = 0; i < InputText.Amount; i++)
+{
+    <RichTextWrapper @ref="richTextReferences[i]" DisableEditing="enableEditing" DisabledEditActions="DisabledEditActions" OriginalText="text"></RichTextWrapper>
+}
+
+@code {
+    [Parameter]
+    public TextObject InputText { get; set; } = new TextObject();
+    private string text = string.Empty;
+    private RichTextWrapper[] richTextReferences = new RichTextWrapper[6];
+
+    private bool enableEditing = false;
+    private List<RichTextEditAction> DisabledEditActions = new List<RichTextEditAction>()
+    {
+        RichTextEditAction.Link,
+        RichTextEditAction.Size
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        richTextReferences = new RichTextWrapper[InputText.Amount + 1];
+        text = InputText.Text;
+    }
+
+
+}
